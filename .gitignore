@@ -1,0 +1,8 @@
+data/*
+models/*
+logts/*
+.ipynb_checkpoints/*
+notebooks/.ipynb_checkpoints/
+src/.ipynb_checkpoints/
+src/__pycache*
+functional_uq.egg-info/
