@@ -6,3 +6,8 @@ notebooks/.ipynb_checkpoints/
 src/.ipynb_checkpoints/
 src/__pycache*
 functional_uq.egg-info/
+results/*
+plots/*
+bounds/*
+scripts/.ipynb_checkpoints/*
+

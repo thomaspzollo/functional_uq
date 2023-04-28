@@ -24,3 +24,7 @@ def specificity(input: Tensor, target: Tensor) -> Tensor:
 def balanced_accuracy(input: Tensor, target: Tensor) -> Tensor:
     alpha = 0.5
     return (1-alpha) * sensitivity(input, target) + alpha * specificity(input, target)
+
+
+def fdr(preds, y):
+    return ((preds / y) == float('inf')).int()
