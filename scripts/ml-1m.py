@@ -86,8 +86,6 @@ def main(args):
             
         print("total_loss", total_loss)
 
-        
-        # hyp_inds = [-14, -20]
         hyp_inds = [-28, -20]
         
         print("total_loss Low", total_loss[hyp_inds[0]])
@@ -115,10 +113,6 @@ def main(args):
                 X_g = np.cumsum(X_g)/np.sum(X_g)
                 ax = np.arange(1, X_g.shape[0] + 1) / X_g.shape[0]
 
-                # if g_name == "old":
-                #     g_label = r"Age $\geq$ 56"
-                # else:
-                #     g_label = r"Age $<$ 55"
                 g_label = g_name
 
                 plt.plot(ax, X_g, label=g_label)
@@ -159,38 +153,11 @@ def main(args):
         )
         plt.clf()
         
-        
-        # plot_losses_single(val_losses, best_ind, thresholds, total_loss, args, "val")
-
-        # print()
-        # print("Computing test losses...")
-        # ## Compute test objective quantities
-        # test_losses = dict()
-        # total_test_loss = 0.0
-        # for l_idx, loss_fn in enumerate(loss_fns):
-        #     test_loss = loss_fn.compute(test_split, None, "test")
-        #     if l_idx >= 1:
-        #         test_loss = args.lamb*test_loss
-        #     test_losses[loss_fn.loss_name] = test_loss
-        #     total_test_loss += test_loss
-        #     print(loss_fn.loss_name, test_loss[best_ind])
-            
-        # emp_min_ind = np.argmin(total_test_loss)
-
-        # plot_losses(test_losses, emp_min_ind, thresholds, total_test_loss, args, "test")
-        # total_test_loss = total_test_loss[best_ind]
-
         val_losses["total"] = total_loss
-        # test_losses["total"] = total_test_loss
         
         for k, v in val_losses.items():
             rows.append((trial_idx, k, "Guarantee", v[best_ind]))
-            
-        # for k, v in test_losses.items():
-        #     if type(v) not in [np.float32, np.float64]:
-        #         v = v[best_ind]
-        #     rows.append((trial_idx, k, "Actual", v))
-  
+
     df = pd.DataFrame(rows, columns=["Trial", "Loss", "Split", "Value"])
     mean_df = df.groupby(["Loss", "Split"]).mean()["Value"].reset_index()
     
@@ -205,20 +172,7 @@ def main(args):
         float_format="%.4f",
         index=False
     )
-    
-#     print("\nStdev.")
-#     std_df = df.groupby(["Loss", "Split"]).std()["Value"].reset_index()
-#     print(std_df)
-#     std_df.to_csv(
-#         "../results/{}_{}_{}_std.csv".format(
-#             args.dataset, 
-#             args.metric,
-#             args.loss
-#         ),
-#         float_format="%.4f",
-#         index=False
-#     )
-    
+
     print(mean_df.to_latex(index=False, float_format="%.3f",))
 
 
