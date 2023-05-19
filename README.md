@@ -24,7 +24,13 @@ library.
 
 ### Running Experiments
 
-Run the below command to reproduce all of our experiments
+Run the below command to reproduce all of our experiments.  Our data can be found under zipped_data/ and includes:
+
+ - CivilComments: Logits, labels, groups
+ - RxRx1: Logits, labels
+ - Movielens: User/Item score matrix, groups
+ 
+Unzip and move data to appropriate folders before running.
 
 #### Section 5.1.1
     
