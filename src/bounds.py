@@ -20,6 +20,16 @@ import numpy.typing as npt
 from src.utils import *
 
 
+def get_upper_from_lower(L):
+                
+    U = np.ones(L.shape)
+    no_i = len(L)
+    for i in range(no_i-1):
+        ind = no_i-i-2
+        U[i] = 1-L[ind]
+    return U
+
+
 def mean_quantile_weight(p):
     return 1.0
 
@@ -35,10 +45,77 @@ def interval_quantile_weight(p, beta_min, beta_max):
     else:
         return 0.0
     
+    
+def integrate_smooth_delta(X, b, beta=0.5, beta_min=0.0, beta_max=1.0):
+
+    dist_max = 1.0
+    a = 0.01
+    X_sorted = np.sort(X, axis=-1)
+    
+    b_lower = np.concatenate([np.zeros(1), b], -1)    
+    b_upper = np.concatenate([b, np.ones(1)], -1)
+
+    # clip bounds to [beta_min, 1]
+    b_lower = np.maximum(b_lower, beta_min)
+    b_upper = np.maximum(b_upper, b_lower)
+
+    # clip bounds to [0, beta_max]
+    b_upper = np.minimum(b_upper, beta_max)
+    b_lower = np.minimum(b_upper, b_lower)
+
+    heights = norm.cdf((b_upper-beta)/(a/(2**0.5))) - norm.cdf((b_lower-beta)/(a/(2**0.5)))
+    widths = np.concatenate([X_sorted, np.full((X_sorted.shape[0], 1), dist_max)], -1)
+
+    return np.sum(heights * widths, -1) / (beta_max - beta_min)
+
+
+def integrate_smooth_delta_upper(X, b, beta=0.5, beta_min=0.0, beta_max=1.0):
+    dist_max = 1.0
+    a = 0.1
+    X_sorted = np.sort(X, axis=-1)
+    
+    b_lower = b
+    b_upper = np.concatenate([b[1:], np.array([1.0])], -1)
+
+    # clip bounds to [beta_min, 1]
+    b_lower = np.maximum(b_lower, beta_min)
+    b_upper = np.maximum(b_upper, b_lower)
+
+    # clip bounds to [0, beta_max]
+    b_upper = np.minimum(b_upper, beta_max)
+    b_lower = np.minimum(b_upper, b_lower)
+
+    heights = norm.cdf((b_upper-beta)/(a/(2**0.5))) - norm.cdf((b_lower-beta)/(a/(2**0.5)))
+    widths = X_sorted
+
+    return np.sum(heights * widths, -1) / (beta_max - beta_min)
+    
+    
+def integrate_quantiles_upper(X, b, beta_min=0.0, beta_max=1.0):
+    dist_max = 1.0
+    X_sorted = np.sort(X, axis=-1)
+    
+    b_lower = b
+    b_upper = np.concatenate([b[1:], np.array([1.0])], -1)
+    
+    # clip bounds to [beta_min, 1]
+    b_lower = np.maximum(b_lower, beta_min)
+    b_upper = np.maximum(b_upper, b_lower)
+    
+    # clip bounds to [0, beta_max]
+    b_upper = np.minimum(b_upper, beta_max)
+    b_lower = np.minimum(b_upper, b_lower)
+
+    heights = b_upper - b_lower
+    widths = X_sorted
+    return np.sum(heights * widths, -1) / (beta_max - beta_min)
+    
+    
 def integrate_quantiles(X, b, beta_min=0.0, beta_max=1.0):
     dist_max = 1.0
     X_sorted = np.sort(X, axis=-1)
-    b_lower = np.concatenate([np.zeros(1), b], -1)
+    
+    b_lower = np.concatenate([np.zeros(1), b], -1)    
     b_upper = np.concatenate([b, np.ones(1)], -1)
     
     # clip bounds to [beta_min, 1]

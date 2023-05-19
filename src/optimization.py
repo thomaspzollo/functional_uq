@@ -19,7 +19,7 @@ def phi_cvar(beta, p):
 def phi_mean(p):
     return 1
 
-def phi_p(p, beta_min=0.0, beta_max=1.0, d=1):
+def phi_p(p, beta_min=0.0, beta_max=1.0, d=2):
     if (beta_max <= 1) & (beta_min >= 0) & (beta_min < beta_max):
         if (p <= beta_max) & (p >= beta_min):
             res = p**d
@@ -93,61 +93,7 @@ def weight_grad(phi, L, X):
         g[i] = phi(L[i])*(X[i]-X[i+1])
     
     return g
-    
-
-#get the desired gradient for a np.array B for softmax version, B's length is n+1
-def softmax_grad(B): 
-    n = len(B)
-    L = np.zeros(n)
-    G = np.zeros(n*n).reshape(n,n) #paritial L_i/b_j
-    
-    for i in range(n):
-        for j in range(n):
-            if j > i:
-                G[i][j] = -B[j]*np.sum(B[:i+1])/(np.sum(B)+1)**2
-            else:
-                G[i][j] = B[j]*(1+np.sum(B[i+1:]))/(np.sum(B)+1)**2
-    
-    G = np.transpose(G)
-    
-    for i in range(n):
-        L[i] = np.sum(B[:i+1])/(np.sum(B)+1)
-    
-    g = np.zeros(n)
-    
-    for j in range(n):
-        g[j] = np.sum(np.multiply(basic_grad(L), G[j]))
-    
-    
-    return g
-
-
-# gradient of loss function, X is the input of n+1 dimension, where the last element is the upper bound of X
-def loss_grad(phi, X, B):
-    n = len(B)
-    L = np.zeros(n)
-    G = np.zeros(n*n).reshape(n,n) #paritial L_i/b_j
-    
-    for i in range(n):
-        for j in range(n):
-            if j > i:
-                G[i][j] = -B[j]*np.sum(B[:i+1])/(np.sum(B)+1)**2
-            else:
-                G[i][j] = B[j]*(1+np.sum(B[i+1:]))/(np.sum(B)+1)**2
-    
-    G = np.transpose(G)
-    
-    for i in range(n):
-        L[i] = np.sum(B[:i+1])/(np.sum(B)+1)
-        
-    g = np.zeros(n)
-    
-    for j in range(n):
-        g[j] = np.sum(np.multiply(weight_grad(phi, L, X), G[j]))
-    
-    
-    return g
-
+   
 
 #get the desired gradient for a np.array B for softmax version, B's length is n+1
 def softmax_grad_exp(B): 
@@ -195,7 +141,7 @@ def loss_grad_exp(phi, X, B):
     return g
 
 
-def quantile_based_loss(X, b, beta_min=0.0, beta_max=1.0, weighted=False, weight_d=1):
+def quantile_based_loss(X, b, beta_min=0.0, beta_max=1.0, weighted=False, weight_d=2):
     dist_max = 1.0
     b_lower = torch.concat([torch.zeros(1).cuda(), b], -1)
     b_upper = torch.concat([b, torch.ones(1).cuda()], -1)

@@ -1,6 +1,6 @@
 data/*
 models/*
-logts/*
+logs/*
 .ipynb_checkpoints/*
 notebooks/.ipynb_checkpoints/
 src/.ipynb_checkpoints/
@@ -10,4 +10,4 @@ results/*
 plots/*
 bounds/*
 scripts/.ipynb_checkpoints/*
-
+notebooks/old/

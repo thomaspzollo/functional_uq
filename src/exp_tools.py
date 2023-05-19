@@ -83,11 +83,13 @@ def get_thresholds(args):
             raise ValueError
     elif args.dataset == "civilcomments":
         if args.metric == "brier":
-            thresholds = torch.linspace(0.01, 2.0, args.num_hypotheses)
+            thresholds = torch.linspace(0.25, 2.0, args.num_hypotheses)
         elif args.metric == "fdr":
             thresholds = torch.linspace(0.00, 1.0, args.num_hypotheses)
         else:
             raise ValueError
+    elif args.dataset == "ml-1m":
+        thresholds = torch.linspace(-5.9767447, 5.6649704, args.num_hypotheses)
     return thresholds
 
 
@@ -210,7 +212,76 @@ def get_bounds(args, train_split, test_split):
     return cdf_bounds 
 
 
-def plot_val(val_losses, best_ind, thresholds, total_loss, args):
+def plot_losses_single(val_losses, best_ind, thresholds, total_loss, args, split="val"):
+    
+    print("plotting {} losses".format(split))
+
+    plt.rcParams["figure.figsize"] = (6,2)
+
+    min_ind = None
+
+    ax_idx = 0
+    min_colors = ["orange", "red", "purple"]
+    for k, v in val_losses.items():
+
+        p = plt.plot(
+            thresholds, 
+            v, 
+            "--", 
+            # color=min_colors[ax_idx]
+        )
+        min_ind = np.argmin(v)
+        plt.plot(
+            thresholds[min_ind], v[min_ind], "--o", 
+            color=p[0].get_color(), 
+            zorder=100, label=k
+        )
+        ax_idx += 1
+
+        if ax_idx == 1:
+            p = plt.plot(thresholds, total_loss, "--")
+            plt.plot(thresholds[best_ind], total_loss[best_ind], "--o", color=p[0].get_color(), label="Expected+Gini")
+            
+    plt.xlabel("Threshold", fontsize=14)
+    plt.ylabel("Loss", fontsize=14)
+    plt.legend()
+    if args.dataset == "rxrx1":
+        plt.xscale("log")
+    else:
+        plt.xscale("linear")
+
+    if args.dataset == "civil_comments":
+        n_label = args.max_per_group
+    else:
+        n_label = args.max_full_pop
+        
+    if args.dataset == "rxrx1":
+        plt_save_path = "../plots/{}_{}_{}_{}_{}.png".format(
+            args.dataset, 
+            args.metric,
+            args.loss,
+            n_label,
+            split
+        )
+    else:
+        plt_save_path = "../plots/{}_{}_{}_{}_{}_{}.png".format(
+            args.dataset, 
+            args.metric,
+            args.loss,
+            n_label,
+            args.lamb,
+            split
+        )
+    plt.savefig(
+        plt_save_path,
+        bbox_inches="tight"
+    )
+    plt.clf()
+
+
+def plot_losses(val_losses, best_ind, thresholds, total_loss, args, split="val"):
+    
+    print("plotting {} losses".format(split))
 
     plt.rcParams["figure.figsize"] = (15,3)
     fig, ax = plt.subplots(1,1+len(val_losses)) 
@@ -220,15 +291,23 @@ def plot_val(val_losses, best_ind, thresholds, total_loss, args):
     ax_idx = 0
     min_colors = ["orange", "red", "purple"]
     for k, v in val_losses.items():
+
         ax[ax_idx].plot(thresholds, v, "--", color="k", label=k)
         ax[ax_idx].scatter(thresholds[best_ind], v[best_ind], color="blue", zorder=100)
         
         min_ind = np.argmin(v)
         ax[ax_idx].scatter(thresholds[min_ind], v[min_ind], color=min_colors[ax_idx], zorder=100)
-        
-        ax[len(val_losses)].scatter(thresholds[min_ind], total_loss[min_ind], color=min_colors[ax_idx], zorder=100)
+
+        ax[len(val_losses)].scatter(
+            thresholds[min_ind], 
+            total_loss[min_ind], 
+            color=min_colors[ax_idx], 
+            zorder=100,
+            label=k
+        )
         ax[ax_idx].set_xlabel("Threshold")
-        ax[ax_idx].set_ylabel("Loss Guarantee")
+        if ax_idx == 0:
+            ax[ax_idx].set_ylabel("Loss Guarantee")
         ax[ax_idx].set_title(k)
 
         if args.dataset == "rxrx1":
@@ -239,20 +318,27 @@ def plot_val(val_losses, best_ind, thresholds, total_loss, args):
         ax_idx += 1
 
     ax[len(val_losses)].plot(thresholds, total_loss, "--", color="k")
-    ax[len(val_losses)].scatter(thresholds[best_ind], total_loss[best_ind], color="blue")
+    ax[len(val_losses)].scatter(thresholds[best_ind], total_loss[best_ind], color="blue", label="Total")
     ax[len(val_losses)].set_xlabel("Threshold")
     ax[len(val_losses)].set_title("Total")
+    ax[len(val_losses)].legend()
 
     if args.dataset == "rxrx1":
         ax[len(val_losses)].set_xscale("log")
     else:
         ax[len(val_losses)].set_xscale("linear")
 
+    if args.dataset == "civil_comments":
+        n_label = args.max_per_group
+    else:
+        n_label = args.max_full_pop
     plt.savefig(
-        "../plots/{}_{}_{}.png".format(
+        "../plots/{}_{}_{}_{}_{}.png".format(
             args.dataset, 
             args.metric,
-            args.loss
+            args.loss,
+            n_label,
+            split
         ),
         bbox_inches="tight"
     )
@@ -265,7 +351,7 @@ def load_configs(args):
     args.beta_max_2 = None
     
     args.no_bounds = 0
-    if ("expected" in args.loss) or ("cvar" in args.loss) or ("gini" in args.loss) or ("interval" in args.loss):
+    if ("expected" in args.loss) or ("cvar" in args.loss) or ("gini" in args.loss) or ("atkinson" in args.loss) or ("interval" in args.loss):
         args.no_bounds += 1
     if ("exp_group" in args.loss) or ("max" in args.loss) or ("worst" in args.loss):
         args.no_bounds += 4
@@ -279,7 +365,7 @@ def load_configs(args):
 
             args.beta_min_1 = 0.0
             args.beta_max_1 = 1.0
-            args.beta_min_2 = 0.8
+            args.beta_min_2 = 0.9
             args.beta_max_2 = 1.0
 
         elif args.metric == "fdr":
@@ -299,6 +385,14 @@ def load_configs(args):
             args.beta_max_2 = 1.0
         else:
             raise ValueError
+            
+    elif args.dataset == "ml-1m":
+
+        args.beta_min_1 = 0.0
+        args.beta_max_1 = 1.0
+        args.beta_min_2 = 0.0
+        args.beta_max_2 = 1.0
+
     else:
         raise ValueError
         
@@ -323,7 +417,8 @@ def main(args):
 
     load_configs(args)
     
-    args.correction = args.delta/(args.num_hypotheses*args.no_bounds)
+    # args.correction = args.delta/(args.num_hypotheses*args.no_bounds)
+    args.correction = args.delta/(1*args.no_bounds)
     
     args.split_interval = (args.beta_max_2 is not None)
     
