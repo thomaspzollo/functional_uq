@@ -1,6 +1,6 @@
 # Functional Uncertainty Quantification
 
-Requires python >= 3.10.  Also, you must install the 
+Requires python >= 3.10 and the 
 <a href="https://github.com/mosco/crossing-probability/blob/master/setup.py">crossing-probability</a>
 library.
 
