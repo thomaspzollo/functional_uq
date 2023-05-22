@@ -26,11 +26,15 @@ library.
 
 Run the below command to reproduce all of our experiments.  Our experiment-ready data can be found under zipped_data/ and includes:
 
- - CivilComments: Logits, labels, group labels (folder: data/civil_comments)
- - RxRx1: Logits, labels (folder: data/rxrx1)
- - Movielens: User/Item score matrix, group labels (folder: data/ml-1m)
+ - CivilComments: Logits, labels, group labels
+ - RxRx1: Logits, labels
+ - Movielens: User/Item score matrix, group labels
  
-Unzip, create data/ folder and move data to appropriate folders before running.
+Unzip, create data/ folder and move data to appropriate folders before running:
+
+    data/civil_comments
+    data/rxrx1
+    data/ml-1m
 
 #### Section 5.1.1
     
