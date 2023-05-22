@@ -98,12 +98,9 @@ def main(args):
             hyp_label = hyp_labels[i]
 
             plt.rcParams["figure.figsize"] = (6,3)
-            g_names = ["male", "female", "Male Over 55", "Other"]
+            g_names = ["Male Over 55", "Other"]
 
             for j, g_name in enumerate(g_names):
-
-                if g_name in ["male", "female"]:
-                    continue
 
                 X_g = test_split.X[
                         torch.where(test_split.g[:,j] == 1)[0]
