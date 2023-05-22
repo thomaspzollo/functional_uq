@@ -84,7 +84,7 @@ def main(args):
         for k, v in val_losses.items():
             print(k, v[best_ind])
             
-        print("total_loss", total_loss)
+#         print("total_loss", total_loss)
 
         hyp_inds = [-28, -20]
         
@@ -150,27 +150,27 @@ def main(args):
         )
         plt.clf()
         
-        val_losses["total"] = total_loss
+#         val_losses["total"] = total_loss
         
-        for k, v in val_losses.items():
-            rows.append((trial_idx, k, "Guarantee", v[best_ind]))
+#         for k, v in val_losses.items():
+#             rows.append((trial_idx, k, "Guarantee", v[best_ind]))
 
-    df = pd.DataFrame(rows, columns=["Trial", "Loss", "Split", "Value"])
-    mean_df = df.groupby(["Loss", "Split"]).mean()["Value"].reset_index()
+#     df = pd.DataFrame(rows, columns=["Trial", "Loss", "Split", "Value"])
+#     mean_df = df.groupby(["Loss", "Split"]).mean()["Value"].reset_index()
     
-    print("\nMean")
-    print(mean_df)
-    mean_df.to_csv(
-        "../results/{}_{}_{}.csv".format(
-            args.dataset, 
-            args.metric,
-            args.loss
-        ),
-        float_format="%.4f",
-        index=False
-    )
+#     print("\nMean")
+#     print(mean_df)
+#     mean_df.to_csv(
+#         "../results/{}_{}_{}.csv".format(
+#             args.dataset, 
+#             args.metric,
+#             args.loss
+#         ),
+#         float_format="%.4f",
+#         index=False
+#     )
 
-    print(mean_df.to_latex(index=False, float_format="%.3f",))
+#     print(mean_df.to_latex(index=False, float_format="%.3f",))
 
 
         ## Random Run Tables and Plot
