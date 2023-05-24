@@ -24,13 +24,13 @@ library.
 
 ### Performing Experiments
 
-Run the below command to reproduce all of our experiments.  Our experiment-ready data can be found under zipped_data/ and includes:
+The commands necessary to reproduce all of our experiments are listed below.  Our experiment-ready data can be found under zipped_data/ and includes:
 
  - CivilComments: Logits, labels, group labels
  - RxRx1: Logits, labels
  - Movielens: User/Item score matrix, group labels
  
-Unzip, create data/ folder and move data to appropriate folders before running:
+Unzip, create data/ folder and move data to appropriate folders before running each:
 
     data/civil_comments
     data/rxrx1
