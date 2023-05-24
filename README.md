@@ -4,7 +4,7 @@ Requires python >= 3.10 and the
 <a href="https://github.com/mosco/crossing-probability/blob/master/setup.py">crossing-probability</a>
 library.
 
-### Source Data and Models
+### Acquiring Raw Data and Models
 
 #### CivilComments
 
@@ -19,10 +19,10 @@ library.
 #### Movielens
 
  - Data can be downloaded here: https://grouplens.org/datasets/movielens/
- - LightGBM model sourced from this repo: https://github.com/microsoft/LightGBM
+ - LightFM model sourced from this repo: https://github.com/lyst/lightfm
 
 
-### Running Experiments
+### Performing Experiments
 
 Run the below command to reproduce all of our experiments.  Our experiment-ready data can be found under zipped_data/ and includes:
 
