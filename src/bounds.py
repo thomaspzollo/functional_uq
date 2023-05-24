@@ -20,24 +20,16 @@ import numpy.typing as npt
 from src.utils import *
 
 
-def get_upper_from_lower(L):
-                
-    U = np.ones(L.shape)
-    no_i = len(L)
-    for i in range(no_i-1):
-        ind = no_i-i-2
-        U[i] = 1-L[ind]
-    return U
-
-
 def mean_quantile_weight(p):
     return 1.0
+
 
 def cvar_quantile_weight(p, beta_min):
     if p >= beta_min:
         return 1.0 / (1.0 - beta_min)
     else:
         return 0.0
+
     
 def interval_quantile_weight(p, beta_min, beta_max):
     if beta_min <= p and p <= beta_max:
@@ -235,6 +227,16 @@ def invert_lcb(t, lcb, beta_vals):
     inds = np.apply_along_axis(np.searchsorted, 1, lcb, beta_vals)
     t_len = t.shape[0]
     return np.where(inds == t_len, np.inf, t[np.minimum(t_len - 1, inds)])
+
+
+def get_upper_from_lower(L):
+                
+    U = np.ones(L.shape)
+    no_i = len(L)
+    for i in range(no_i-1):
+        ind = no_i-i-2
+        U[i] = 1-L[ind]
+    return U
 
 
 class Bound:
