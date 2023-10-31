@@ -16,9 +16,9 @@ setup(
     version="0.0.1",
     description="Distribution-free guarantees for statistical functionals of loss CDF",
     long_description=readme,
-    author="anonymous",
-    author_email="anonymous",
-    url="anonymous",
+    author="Thomas Zollo, Jake Snell, Zhun Deng",
+    author_email="tpz2105@columbia.edu",
+    url="https://github.com/thomaspzollo/functional_uq",
     license=license,
     packages=find_packages(exclude=("tests")),
 )
