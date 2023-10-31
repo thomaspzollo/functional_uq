@@ -1,5 +1,9 @@
 # Functional Uncertainty Quantification
 
+Code accompanying *Distribution-Free Statistical Dispersion Control for Societal Applications*, presented as a Spotlight paper at Neurips 2023. 
+
+<a href="https://arxiv.org/abs/2309.13786">(view on arXiv)</a>
+
 Requires python >= 3.10 and the 
 <a href="https://github.com/mosco/crossing-probability/blob/master/setup.py">crossing-probability</a>
 library.
